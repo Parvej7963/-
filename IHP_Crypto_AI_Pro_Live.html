@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IHP Crypto AI Pro</title>
+<style>
+:root{--bg:#080d18;--panel:#111a2b;--panel2:#172238;--line:#263650;--text:#edf3ff;--muted:#91a2bd;--green:#21d49a;--red:#ff6378;--blue:#6ca8ff;--gold:#ffc766}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#14294b 0,transparent 35%),var(--bg);color:var(--text);font:15px system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{padding:22px 16px 16px;max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;gap:11px;align-items:center}.logo{width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#438cff,#7c5cff);display:grid;place-items:center;font-weight:900;font-size:18px;box-shadow:0 8px 25px #386dca55}
+h1{font-size:21px;margin:0} .sub{color:var(--muted);font-size:12px;margin-top:3px}
+.pill{border:1px solid var(--line);padding:8px 12px;border-radius:30px;color:var(--muted);font-size:12px}
+main{max-width:1200px;margin:auto;padding:0 14px 35px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.card{background:linear-gradient(145deg,#141f33,#0e1727);border:1px solid var(--line);border-radius:17px;padding:15px;min-width:0;box-shadow:0 10px 28px #0002}
+.metric small,.muted{color:var(--muted)}.metric strong{display:block;font-size:22px;margin-top:8px;overflow-wrap:anywhere}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.section-title{font-size:16px;font-weight:750;margin:0 0 13px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}.field,button,select{background:#0b1424;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;min-width:0}
+.field{flex:1;min-width:130px}button{cursor:pointer}button.primary{background:linear-gradient(120deg,#347ff1,#7257e8);border:0;font-weight:700}button.active{border-color:var(--blue);color:var(--blue)}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:14px;margin-bottom:14px}
+.price{font-size:30px;font-weight:800;letter-spacing:-1px}.change{font-weight:700}.positive{color:var(--green)}.negative{color:var(--red)}
+canvas{width:100%;height:245px;display:block;margin-top:10px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.stat{background:#0b1424;border-radius:10px;padding:10px}.stat small{display:block;color:var(--muted);font-size:11px}.stat b{display:block;margin-top:4px;font-size:13px;overflow-wrap:anywhere}
+.list{display:grid;gap:8px}.coinrow{display:flex;justify-content:space-between;gap:8px;padding:10px;background:#0b1424;border-radius:10px;cursor:pointer}.coinrow:hover{border:1px solid var(--blue)}
+.signal{border-radius:13px;padding:14px;background:#0b1424;margin-top:12px}.signal b{font-size:20px}.tag{font-size:11px;padding:4px 8px;border-radius:20px;background:#263650;color:#c6d7f3}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:right;padding:10px 6px;border-bottom:1px solid var(--line)}td:first-child,th:first-child{text-align:left}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 10px;line-height:1.7}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:1fr}.price{font-size:26px}}
+@media(max-width:390px){.grid{gap:8px}.card{padding:12px}.metric strong{font-size:18px}}
+</style></head>
+<body>
+<header><div class="brand"><div class="logo">IHP</div><div><h1>IHP Crypto AI <span style="color:#75aaff">PRO</span></h1><div class="sub">Live crypto market intelligence · Public data</div></div></div><div class="pill" id="status">● সংযোগ করা হচ্ছে…</div></header>
+<main>
+<div class="grid">
+ <div class="card metric"><small>BTC-এর দাম</small><strong id="btcPrice">লোড হচ্ছে…</strong><small id="btcChange">—</small></div>
+ <div class="card metric"><small>মোট USDT মার্কেট</small><strong id="pairCount">—</strong><small>Binance Spot pairs</small></div>
+ <div class="card metric"><small>বাজারে ঊর্ধ্বমুখী</small><strong id="advancers">—</strong><small>Top 100 USDT pairs</small></div>
+ <div class="card metric"><small>বাজারে নিম্নমুখী</small><strong id="decliners">—</strong><small>Top 100 USDT pairs</small></div>
+</div>
+<div class="layout">
+<section class="card">
+ <div class="row"><div><div class="muted" id="pairName">BTC/USDT</div><div class="price" id="mainPrice">লোড হচ্ছে…</div><div id="mainChange" class="change">—</div></div>
+ <div class="controls"><select id="interval"><option value="5m">5m</option><option value="15m">15m</option><option value="1h" selected>1h</option><option value="4h">4h</option><option value="1d">1d</option></select><button id="refresh">↻ Refresh</button></div></div>
+ <canvas id="chart" width="900" height="300"></canvas>
+ <div class="statrow"><div class="stat"><small>২৪ ঘণ্টার সর্বোচ্চ</small><b id="high">—</b></div><div class="stat"><small>২৪ ঘণ্টার সর্বনিম্ন</small><b id="low">—</b></div><div class="stat"><small>২৪ ঘণ্টার ভলিউম</small><b id="volume">—</b></div></div>
+</section>
+<section class="card">
+ <div class="row"><h2 class="section-title">AI-Style Signal</h2><span class="tag">Rule-based</span></div>
+ <div class="signal"><div class="muted">সম্ভাব্য বাজার সংকেত</div><b id="signal">বিশ্লেষণ চলছে…</b><p class="muted" id="reason">EMA ও RSI হিসাব করা হচ্ছে।</p></div>
+ <div class="statrow"><div class="stat"><small>RSI (14)</small><b id="rsi">—</b></div><div class="stat"><small>EMA 9</small><b id="ema9">—</b></div><div class="stat"><small>EMA 21</small><b id="ema21">—</b></div></div>
+ <p class="muted" style="font-size:12px;line-height:1.6">এটি নিশ্চিত ভবিষ্যদ্বাণী নয়। শুধু অতীতের দামের ভিত্তিতে নিয়মভিত্তিক বিশ্লেষণ।</p>
+</section></div>
+<div class="layout">
+<section class="card"><div class="row"><h2 class="section-title">Market Explorer</h2><button id="favOnly">☆ Favorites</button></div><div class="controls" style="margin-bottom:12px"><input class="field" id="search" placeholder="কয়েন খুঁজুন, যেমন ETH"><button id="searchBtn" class="primary">Search</button></div><div class="list" id="markets"><div class="muted">মার্কেট ডেটা লোড হচ্ছে…</div></div></section>
+<section class="card"><h2 class="section-title">Top Gainers</h2><div class="list" id="gainers"></div><h2 class="section-title" style="margin-top:18px">Top Losers</h2><div class="list" id="losers"></div></section>
+</div>
+<div class="layout">
+<section class="card"><div class="row"><h2 class="section-title">Order Book Snapshot</h2><button id="bookBtn">Update</button></div><div class="muted" id="spread">Spread: —</div><table><thead><tr><th>Bid (Buy)</th><th>পরিমাণ</th><th>Ask (Sell)</th><th>পরিমাণ</th></tr></thead><tbody id="book"><tr><td colspan="4" class="muted">লোড হচ্ছে…</td></tr></tbody></table></section>
+<section class="card"><h2 class="section-title">Price Alert</h2><div class="controls"><input class="field" id="alertPrice" type="number" placeholder="Target price"><select id="alertMode"><option value="above">দাম এর উপরে গেলে</option><option value="below">দাম এর নিচে গেলে</option></select><button class="primary" id="addAlert">Set</button></div><p class="muted" id="alertText">এই ব্রাউজারে পেজ খোলা থাকলে অ্যালার্ট চেক হবে।</p><hr style="border-color:var(--line);margin:15px 0"><h2 class="section-title">Paper Trading</h2><div class="controls"><input class="field" id="paperQty" type="number" placeholder="পরিমাণ (coin)" step="any"><button id="buyPaper" class="primary">Buy</button><button id="sellPaper">Sell</button></div><p id="paperInfo" class="muted">সিমুলেটেড ট্রেড; আসল টাকা ব্যবহার হয় না।</p></section>
+</div>
+<footer>IHP Crypto AI Pro · Binance public market data · No API key required<br>শিক্ষামূলক টুল। এটি আর্থিক পরামর্শ নয়। Futures/Leverage-এ পুরো মূলধন হারানোর ঝুঁকি আছে।</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:8}),money=n=>'$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:4});
+let symbol='BTCUSDT',all=[],fav=JSON.parse(localStorage.ihpFav||'["BTCUSDT","ETHUSDT"]'),onlyFav=false,klines=[],alertRule=null,paper={qty:0,cost:0},priceSocket=null;
+const api='https://api.binance.com/api/v3/';
+async function get(path){let r=await fetch(api+path);if(!r.ok)throw Error('API '+r.status);return r.json()}
+function setStatus(s,ok=true){$('status').textContent=(ok?'● ':'● ')+s;$('status').style.color=ok?'#21d49a':'#ff6378'}
+
+function connectLivePrice(){
+ if(priceSocket){try{priceSocket.close()}catch(e){}}
+ const streams=[symbol.toLowerCase()+'@ticker','btcusdt@ticker'].filter((v,i,a)=>a.indexOf(v)===i);
+ priceSocket=new WebSocket('wss://stream.binance.com:9443/stream?streams='+streams.join('/'));
+ priceSocket.onopen=()=>setStatus('লাইভ WebSocket সংযুক্ত');
+ priceSocket.onmessage=ev=>{
+  try{
+   const packet=JSON.parse(ev.data),t=packet.data;
+   if(!t||!t.s)return;
+   if(t.s==='BTCUSDT'){
+    $('btcPrice').textContent=money(t.c);
+    $('btcChange').textContent=(+t.P).toFixed(2)+'% (24h)';
+    $('btcChange').className=+t.P>=0?'positive':'negative';
+   }
+   if(t.s===symbol){
+    $('mainPrice').textContent=money(t.c);
+    $('mainChange').textContent=(+t.P).toFixed(2)+'% · 24h';
+    $('mainChange').className='change '+(+t.P>=0?'positive':'negative');
+    $('high').textContent=money(t.h);$('low').textContent=money(t.l);$('volume').textContent=fmt(t.v);
+    const cached=all.find(x=>x.symbol===symbol);
+    if(cached){cached.lastPrice=t.c;cached.priceChangePercent=t.P;cached.highPrice=t.h;cached.lowPrice=t.l;cached.volume=t.v;}
+    checkAlert();
+   }
+  }catch(e){}
+ };
+ priceSocket.onerror=()=>setStatus('লাইভ সংযোগে সমস্যা',false);
+ priceSocket.onclose=()=>{setStatus('লাইভ সংযোগ পুনরায় হচ্ছে…',false);setTimeout(()=>connectLivePrice(),3000)};
+}
+
+async function loadMarket(){try{all=await get('ticker/24hr');let us=all.filter(x=>x.symbol.endsWith('USDT')).sort((a,b)=>Number(b.quoteVolume)-Number(a.quoteVolume));$('pairCount').textContent=us.length;$('advancers').textContent=us.filter(x=>+x.priceChangePercent>0).length;$('decliners').textContent=us.filter(x=>+x.priceChangePercent<0).length;let btc=all.find(x=>x.symbol==='BTCUSDT');$('btcPrice').textContent=money(btc.lastPrice);$('btcChange').textContent=Number(btc.priceChangePercent).toFixed(2)+'% (24h)';$('btcChange').className=+btc.priceChangePercent>=0?'positive':'negative';renderLists(us);setStatus('লাইভ ডেটা সংযুক্ত');checkAlert()}catch(e){setStatus('সংযোগ ব্যর্থ · ইন্টারনেট/API দেখুন',false)}}
+function renderLists(us){let q=$('search').value.trim().toUpperCase(),list=us.filter(x=>(!q||x.symbol.includes(q))&&(!onlyFav||fav.includes(x.symbol))).slice(0,25);$('markets').innerHTML=list.map(x=>`<div class="coinrow" data-s="${x.symbol}"><b>${x.symbol.replace('USDT','/USDT')} ${fav.includes(x.symbol)?'★':''}</b><span>${money(x.lastPrice)} <i class="${+x.priceChangePercent>=0?'positive':'negative'}">${(+x.priceChangePercent).toFixed(2)}%</i></span></div>`).join('')||'<p class="muted">কোনো কয়েন পাওয়া যায়নি</p>';document.querySelectorAll('.coinrow').forEach(el=>el.onclick=()=>selectCoin(el.dataset.s));let sorted=[...us].filter(x=>+x.lastPrice>0);$('gainers').innerHTML=sorted.sort((a,b)=>+b.priceChangePercent- +a.priceChangePercent).slice(0,5).map(row).join('');$('losers').innerHTML=sorted.sort((a,b)=>+a.priceChangePercent- +b.priceChangePercent).slice(0,5).map(row).join('')}
+function row(x){return `<div class="coinrow" data-s="${x.symbol}"><b>${x.symbol.replace('USDT','')}</b><span class="${+x.priceChangePercent>=0?'positive':'negative'}">${(+x.priceChangePercent).toFixed(2)}%</span></div>`}
+async function selectCoin(s){symbol=s;connectLivePrice();await loadCoin()}
+async function loadCoin(){try{let t=await get('ticker/24hr?symbol='+symbol);$('pairName').textContent=symbol.replace('USDT','/USDT');$('mainPrice').textContent=money(t.lastPrice);$('mainChange').textContent=(+t.priceChangePercent).toFixed(2)+'% · 24h';$('mainChange').className='change '+(+t.priceChangePercent>=0?'positive':'negative');$('high').textContent=money(t.highPrice);$('low').textContent=money(t.lowPrice);$('volume').textContent=fmt(t.volume);klines=await get(`klines?symbol=${symbol}&interval=${$('interval').value}&limit=100`);drawChart();analyze();await loadBook();checkAlert()}catch(e){setStatus('কয়েন ডেটা লোড হয়নি',false)}}
+function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height,vals=klines.map(k=>+k[4]);ctx.clearRect(0,0,w,h);if(!vals.length)return;let min=Math.min(...vals),max=Math.max(...vals),pad=(max-min)*.12||1;min-=pad;max+=pad;ctx.strokeStyle='#263650';ctx.lineWidth=1;for(let i=1;i<5;i++){let y=h*i/5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.beginPath();vals.forEach((v,i)=>{let x=i*w/(vals.length-1),y=h-(v-min)/(max-min)*h;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.strokeStyle=vals.at(-1)>=vals[0]?'#21d49a':'#ff6378';ctx.lineWidth=3;ctx.stroke()}
+function ema(vals,p){let k=2/(p+1),e=vals[0];for(let v of vals.slice(1))e=v*k+e*(1-k);return e}
+function analyze(){let v=klines.map(k=>+k[4]);if(v.length<25)return;let gains=0,loss=0;for(let i=v.length-14;i<v.length;i++){let d=v[i]-v[i-1];if(d>0)gains+=d;else loss-=d}let rs=loss===0?100:gains/loss,rsi=100-100/(1+rs),e9=ema(v.slice(-40),9),e21=ema(v.slice(-60),21),signal=e9>e21&&rsi<70?'সম্ভাব্য ঊর্ধ্বমুখী':e9<e21&&rsi>30?'সম্ভাব্য নিম্নমুখী':'নিরপেক্ষ / অপেক্ষা';$('rsi').textContent=rsi.toFixed(1);$('ema9').textContent=fmt(e9);$('ema21').textContent=fmt(e21);$('signal').textContent=signal;$('signal').style.color=signal.includes('ঊর্ধ্ব')?'#21d49a':signal.includes('নিম্ন')?'#ff6378':'#ffc766';$('reason').textContent=`EMA 9 ${e9>e21?'EMA 21-এর ওপরে':'EMA 21-এর নিচে'}; RSI ${rsi.toFixed(1)}।`}
+async function loadBook(){try{let b=await get('depth?symbol='+symbol+'&limit=5'),bid=+b.bids[0][0],ask=+b.asks[0][0];$('spread').textContent='Spread: '+fmt(ask-bid)+' ('+((ask-bid)/((ask+bid)/2)*100).toFixed(4)+'%)';$('book').innerHTML=Array.from({length:5},(_,i)=>`<tr><td class="positive">${fmt(b.bids[i][0])}</td><td>${fmt(b.bids[i][1])}</td><td class="negative">${fmt(b.asks[i][0])}</td><td>${fmt(b.asks[i][1])}</td></tr>`).join('')}catch(e){$('spread').textContent='Order book unavailable'}}
+function checkAlert(){if(!alertRule)return;let t=all.find(x=>x.symbol===symbol);if(!t)return;let p=+t.lastPrice,hit=alertRule.mode==='above'?p>=alertRule.price:p<=alertRule.price;if(hit){$('alertText').textContent='🔔 লক্ষ্য পূরণ: '+money(p);if('Notification'in window&&Notification.permission==='granted')new Notification('IHP Crypto AI Alert',{body:symbol+' price: '+p});alertRule=null}}
+$('refresh').onclick=()=>{loadMarket();loadCoin()};$('interval').onchange=loadCoin;$('searchBtn').onclick=()=>renderLists(all.filter(x=>x.symbol.endsWith('USDT')).sort((a,b)=>+b.quoteVolume- +a.quoteVolume));$('search').oninput=()=>renderLists(all.filter(x=>x.symbol.endsWith('USDT')).sort((a,b)=>+b.quoteVolume- +a.quoteVolume));$('favOnly').onclick=()=>{onlyFav=!onlyFav;$('favOnly').classList.toggle('active',onlyFav);renderLists(all.filter(x=>x.symbol.endsWith('USDT')).sort((a,b)=>+b.quoteVolume- +a.quoteVolume))};
+$('markets').onclick=e=>{let el=e.target.closest('.coinrow');if(el&&e.target.closest('b')&&e.target.textContent.includes('★')){e.stopPropagation();fav=fav.filter(x=>x!==el.dataset.s);localStorage.ihpFav=JSON.stringify(fav);renderLists(all.filter(x=>x.symbol.endsWith('USDT')).sort((a,b)=>+b.quoteVolume- +a.quoteVolume))}};
+$('addAlert').onclick=async()=>{let p=+$('alertPrice').value;if(!p)return alert('Target price দিন');alertRule={price:p,mode:$('alertMode').value};$('alertText').textContent=`${symbol} ${alertRule.mode==='above'?'উপরে':'নিচে'} ${money(p)} গেলে অ্যালার্ট।`;if('Notification'in window&&Notification.permission==='default')await Notification.requestPermission()};
+$('bookBtn').onclick=loadBook;$('buyPaper').onclick=()=>{let q=+$('paperQty').value,p=+(all.find(x=>x.symbol===symbol)?.lastPrice||0);if(q<=0||!p)return;paper.cost+=q*p;paper.qty+=q;paperInfo()};$('sellPaper').onclick=()=>{let q=+$('paperQty').value,p=+(all.find(x=>x.symbol===symbol)?.lastPrice||0);if(q<=0||q>paper.qty)return alert('যথেষ্ট paper coin নেই');paper.qty-=q;paper.cost=paper.qty*p;paperInfo()};function paperInfo(){$('paperInfo').textContent=`Paper balance: ${fmt(paper.qty)} ${symbol.replace('USDT','')} · আনুমানিক মূল্য ${money(paper.qty*(+(all.find(x=>x.symbol===symbol)?.lastPrice||0)))}`;}
+loadMarket().then(()=>{loadCoin();connectLivePrice()});setInterval(loadMarket,15000);setInterval(()=>{if(symbol){get(`klines?symbol=${symbol}&interval=${$('interval').value}&limit=100`).then(k=>{klines=k;drawChart();analyze()}).catch(()=>{})}},60000);
+</script></body></html>
